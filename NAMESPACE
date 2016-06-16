@@ -1,0 +1,24 @@
+import("DBI", "RMySQL", "foreach", "digest", "shiny")
+import("methods")
+export(gmCreateDB, gmConnectServer, gmDisconnectServer,
+       gmListVariables,gmListVariableTypes,gmDBSummary)
+export(forKeyVal)
+export(gmEscapeStrings)
+export(gmSQLValues)
+export(extractDollarExpressions, findVarsInExpression, gmExpr)
+export(gmSQL,gmSQLTable,gmSQL2SQL)
+export(gmGetVariableType,gmJoinAVariable,replaceVarsInExpression)
+export(gmAndify, tick, dbNow)
+export(gmReadInternal, gmRead)
+export(gmGet, gmGetVar)
+export(gmClass, gmClassMembers, repairGmGrandChilds)
+export(gmAdd, gmSet, gmRemove)
+export(SQLenv, SQL2SQLenv)
+export(gmChangePassword)
+export(gmCreateUser, gmCreateClass, gmAddMembers, gmCreateRightsGroup, gmCreateUserGroup, gmSetRights, gmDefaultRightsGroup, gmAddUserToGroup, gmSetRightsGroup)
+
+exportMethods(gmRequest)
+
+exportClasses(gmExpr)
+
+export(root)
