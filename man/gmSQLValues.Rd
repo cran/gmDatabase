@@ -13,16 +13,16 @@
     be done. Currently only mysql is supported.}
 }
 \value{
-  \itemize{\code{gmSQLValues}}{
+  \item{\code{gmSQLValues}}{
   A single string containing an SQL representation of the vector for use
-  with the \code{IN} operator.
-  %\itemize{\code{gmEscapeStrings}}{
+  with the \code{IN} operator.}
+  %\item{\code{gmEscapeStrings}}{
   %  The Strings escaped for use in SQL
   %}
-}}
+}
 \details{
-The functions currently use \code{\link{dbEscapeStrings}} and are
-therefor only reliable with RMySQL-Connections.
+The functions currently use \code{\link{gmEscapeStrings}} and are
+therefore only reliable with RMySQL-Connections.
 }
 \seealso{
   \code{\link{gmEscapeStrings}}

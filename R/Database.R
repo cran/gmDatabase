@@ -23,7 +23,7 @@ forKeyVal <- function(key,val,LIST,block,envir=parent.frame()) {
   }
 }
 
-### 
+###
 gmEscapeStrings <- function(s,db=getOption("gmDB")) {
   #mysqlEscapeStrings(db,as.character(s))
   dbEscapeStrings(db, as.character(s))
@@ -34,7 +34,7 @@ gmObjects <- function(x,db=getOption("gmDB")) {
   structure(as.integer(x),class="gmObjects")
 }
 
-### Converts a sequence of values into an SQL (,,,) expression 
+### Converts a sequence of values into an SQL (,,,) expression
 gmSQLValues <- function(v,quote=TRUE,db=getOption("gmDB")) {
   if( is.data.frame(v) ) {
     n <- nrow(v)
@@ -44,7 +44,7 @@ gmSQLValues <- function(v,quote=TRUE,db=getOption("gmDB")) {
   } else {
     if( is.numeric(v) ) {
       #paste("(",paste(as.integer(v),collapse=",",sep=""),")",sep="")
-      
+
       paste(as.integer(v),collapse=",",sep="")
     } else if(quote)
     {
@@ -70,7 +70,7 @@ aliasof <- function(x,name) { #intern
   } else {
     return(as.character(x))
   }
-} 
+}
 
 ###
 gmSQLTable <- function(table,as=tick(table)) call("table",table=table,as=as)
@@ -103,11 +103,11 @@ with(SQLenv, {
   #}
   sum <- function(x) call("sum",x)
   count <- function(x) call("count",x)
-  min <- function(...) call("min",...) 
+  min <- function(...) call("min",...)
   max <- function(...) call("max",...)
   between <- function(...) call ("between", ...)
   const <- function(x) call("const",x)
-  values <- function(x) call("values",x) 
+  values <- function(x) call("values",x)
   #  "c"<-function(...) as.call(list(as.name("c"),...))
   `Call`<-function(fun,...) as.call(list(as.name("Call"),fun,...))
   for(XXX in objects(SQLenv) ) eval(bquote(environment(.(as.name(XXX))) <- environment(gmSQLValues)),envir=SQLenv)
@@ -144,7 +144,7 @@ with(SQL2SQLenv, {
                          if(is.null(nams[i]))
                            paste(gmSQL2SQL(expr=what[[i]],env=en2))
                          else
-                           paste(gmSQL2SQL(expr=what[[i]],env=en2),"as",nams[i],sep=" ")                              
+                           paste(gmSQL2SQL(expr=what[[i]],env=en2),"as",nams[i],sep=" ")
                        }),collapse=",")
     if( !is.null(where) ) {
       where <- paste("\nWHERE",where)
@@ -192,7 +192,7 @@ with(SQL2SQLenv, {
     else
       paste("'",gmEscapeStrings(as.character(x)),"'",sep="")
   }
-  "values"<-gmSQLValues 
+  "values"<-gmSQLValues
   `Call` <- function(fun,...) {paste(" ",fun,"(",...,")",sep="")}
   for(XXX in objects(SQL2SQLenv) ) eval(bquote(environment(.(as.name(XXX))) <- environment(gmSQLValues)),envir=SQL2SQLenv)
   # identical<-identical
@@ -302,7 +302,7 @@ gmGetVariableType <- function(sel,name,selID=attr(sel,"id"),db=getOption("gmDB")
                FROM (gmVar NATURAL JOIN gmVarType)  WHERE gmVar.gmVarName IN ",
                gmSQLValues(name, db=db)," GROUP BY gmVar.gmVarID",sep=" ")
   erg <- dbGetQuery(db,sql)
-  
+
   found <- name %in% erg$name
   if( ! all(found))
     stop("gmGetVariableType: Variables not found: ",paste(name[!found],collapse=","))
@@ -312,7 +312,7 @@ gmGetVariableType <- function(sel,name,selID=attr(sel,"id"),db=getOption("gmDB")
   erg<-erg[match(name,erg$name),]
   erg$gmVar <- c(gmNumeric="x",gmString="x",gmText="x",gmRef="gmRefID",
                  gmBlob="x",gmInteger="x",gmBoolean="x",gmDate="x")[erg$gmTable]
-  
+
   erg
 }
 
@@ -349,7 +349,7 @@ gmJoinAVariable <- function(sel,var,nameUse=var,bind=TRUE,db=getOption("gmDB"),s
   varb <- gmSQL(leftjoin(
     sel,
     va,
-    on= va$gmVarID==const(varID) & selID == va$gmID 
+    on= va$gmVarID==const(varID) & selID == va$gmID
   ),env=ennv
   )
   if( bind ) {
@@ -373,7 +373,7 @@ gmJoinTheID <- function(sel,nameUse,db=getOption("gmDB"),front=FALSE) {
 makeGmSQLfromR <-function(EXPR,vars,warn=FALSE) {
   if (FALSE)
   {
-    error <- nofunc 
+    error <- nofunc
   }
   if( is.name(EXPR) ) {
     nam <- as.character(EXPR)
@@ -396,7 +396,7 @@ makeGmSQLfromR <-function(EXPR,vars,warn=FALSE) {
     }
     if( identical(EXPR[[1]],as.name("$")) ) {
       error("makeGmSQLfromR: $expression not implemented")
-    } else if( length(EXPR)>1 ) 
+    } else if( length(EXPR)>1 )
       for(i in 2:length(EXPR))
         EXPR[[i]]<-makeGmSQLfromR(EXPR[[i]],vars,warn)
     return(EXPR)
@@ -430,7 +430,7 @@ replaceVarsInExpression <- function(EXPR,vars,warn=FALSE) {
     if( identical(EXPR[[1]],as.name("."))) {
       return(EXPR)
     }
-    if( length(EXPR)>1 ) 
+    if( length(EXPR)>1 )
       for(i in 2:length(EXPR))
         EXPR[[i]]<-replaceVarsInExpression(EXPR[[i]],vars,warn)
     return(EXPR)
@@ -501,7 +501,7 @@ gmID2Selection <- function(EXPR,gmNameVarID) {
   ennv <- new.env(parent=SQLenv)
   assign("my",gmSQLTable("gmObject"),ennv)
   assign("EXPR",EXPR,ennv)
-  
+
   if( is.numeric(EXPR) ) {  # List of ids
     prim <- gmSQL(select(what=list(gmID=my$gmID),
                          from=my,
@@ -536,33 +536,33 @@ setMethod("initialize", "gmExpr",
 
 gmExpr <- function(expr,...,envir=parent.frame(),EXPR=substitute(expr)){
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
-  EXPR <- unquote(EXPR) 
+  EXPR <- unquote(EXPR)
   #structure(list(EXPR=EXPR),envir=envir,class="gmExpr")
   new(Class="gmExpr", EXPR=EXPR, envir=envir)
 }
 
 ###
-gmRead <- function(expr,envir=parent.frame(),EXPR=substitute(expr),limit=-1,db=getOption("gmDB")) {  
+gmRead <- function(expr,envir=parent.frame(),EXPR=substitute(expr),limit=-1,db=getOption("gmDB")) {
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
   EXPR <- unquote(EXPR)
   res <- gmRequest("gmiInitRead", parameters=list(EXPR=EXPR, envir=envir, limit=limit), db=db)
-  
+
   return(res)
 }
 
@@ -573,36 +573,36 @@ gmiInitRead <- function(EXPR, envir, limit, db) {
     gmID <- nofunc
     id <- nofunc
   }
-  
+
   res <- gmiFullRead(EXPR=EXPR, envir=envir, limit=limit, db=db)
   #res <- res[order(res$gmID),]
   if (nrow(res) == 0)
     return(res)
-  
+
   # rights management
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   rgID <- gmRequest("gmiRightsGroup", parameters=list(gmID=res$gmID), db=db)
-  
+
   ### NA correction for no given rights group
   rgID$rg[is.na(rgID$rg)] <- -1
-  
+
   tmp <- names(table(rgID$rg))
   if (length(tmp) == 1 && tmp == -1)
     return(res)
   ruser <- gmiFullRead(gmExpr(root$rightsGroup[id=gmID, id %in% .(tmp), id=drop, user=.$readers$userGroup$user]))
-  
+
   ### deleting all empty entries
   ruser <- ruser[!is.na(ruser$user),]
-  
+
   ruser1 <- ruser[ruser$user==userID,]
   idx1 <- is.element(rgID$rg, ruser1$gmID)
   #idx1 <- rgID$rg==ruser1$gmID
-  
+
   ### if no rights group is given, anyone can access
   idx2 <- rgID$rg==-1
   idx <- idx1 | idx2
   #idx[is.na(idx)] <- TRUE
-  
+
   #return(res[res$gmID==rgID[idx,]$gmID,, drop=FALSE])
   return(res[res$gmID %in% rgID[idx,]$gmID,, drop=FALSE])
 }
@@ -619,7 +619,7 @@ gmiFullRead <- function(EXPR, envir=parent.frame(), limit=-1, db=getOption("gmDB
 
 
 gmiRead <- function(EXPR, limit, db, user=getOption("dbUser"))
-{ 
+{
   sel   <- gmReadInternal(EXPR=EXPR,db=db,gmNameVarID=getGmNameVarID(db))
   #cat("sel=\n")
   #print(sel)
@@ -656,9 +656,9 @@ gmiProcessExpr <- function(EXPR,envir=parent.frame(),type=0) {
     return(Recall(EXPR@EXPR,envir=EXPR@envir,type=type))
   }
   if( is.name(EXPR)) {
-    if(identical(EXPR,as.name("root"))) 
+    if(identical(EXPR,as.name("root")))
       return(EXPR)
-    if(identical(EXPR,as.name("."))) 
+    if(identical(EXPR,as.name(".")))
       return(EXPR)
     EXPR=eval(EXPR,envir)
   }
@@ -683,9 +683,9 @@ gmiProcessExpr <- function(EXPR,envir=parent.frame(),type=0) {
          "."={gmiProcessExpr(eval(EXPR[[2]],envir),envir=envir)}
          ,stop(as.character(fun)," not implemented
                           in gmRead")
-         
+
          )
-  
+
 }
 
 gmReadInternal <- function(EXPR,sel=NULL,db,
@@ -736,7 +736,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
   } else if(is.character(EXPR)) { # list of named objects
     assign("gmNameVarID",gmNameVarID,ennv)
     prim <- gmSQL(join(my,gmName,
-                       on=gmName$gmVarID==const(gmNameVarID) & my$gmID==gmName$gmID & (gmName$x %in% const(gmEscapeStrings(EXPR))) 
+                       on=gmName$gmVarID==const(gmNameVarID) & my$gmID==gmName$gmID & (gmName$x %in% const(gmEscapeStrings(EXPR)))
     ),env=ennv)
     assign("prim",prim,ennv)
     structure(prim,id=gmSQL(my$gmID,env=ennv),vars=list())
@@ -749,7 +749,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
                # expects variable name on right hand side
                lhs <- EXPR[[2]]
                rhs <- as.character(EXPR[[3]])
-               ## expects a (derived) table 
+               ## expects a (derived) table
                sel <- gmReadInternal(EXPR=lhs,sel=sel,db=db,gmNameVarID=gmNameVarID)
                assign("sel",sel,ennv)
                vars <- attr(sel,"vars")
@@ -771,7 +771,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
                cond <- list()
                group <- list()
                # obj[x,"y",t=x+y,z==4,t==z*z] => select gmID as id, x,y, (x+y) as t from obj where z=4 AND t=z*z;
-               # 
+               #
                forKeyVal(key,val,rhs,{
                  #print(vars)
                  if( is.null(key) ) {
@@ -779,7 +779,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
                    if( is.name(val) ) # root[x] => select x ...
                      val <- as.character(val)
                    if( is.character(val) ) { # root["x"], # root[c("x","z")]
-                     # => select x,z ... 
+                     # => select x,z ...
                      attr(sel,"vars")<-vars
                      attr(sel,"id")<-id
                      for(x in val) sel<-gmJoinAVariable(sel,x,x,db=db,bind=TRUE)
@@ -863,7 +863,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
                                 vars=vars,
                                 id=id
                )
-               sel                               
+               sel
              },
              join={
                stopifnot( length(EXPR) %in% 3:4 )
@@ -877,7 +877,7 @@ gmReadInternal <- function(EXPR,sel=NULL,db,
                if( length(EXPR)==4 ){
                  on = makeGmSQLfromR(EXPR[[4]],allVars)
                }
-               if( length(nb)>0 ) 
+               if( length(nb)>0 )
                  on <- c(on,lapply(nb,function(n) call("==",attr(x,"vars")[[n]],attr(y,"vars")[[n]])))
                assign("gmAndify",gmAndify,ennv)
                assign("on",on,ennv)
@@ -909,7 +909,7 @@ gmClass <- function(expr,var,envir=parent.frame(),EXPR=substitute(expr),db=getOp
 
 ### gmClass for expressions
 gmiClass <- function(id, db) {
-  sql <- paste("SELECT DISTINCT gmRefID as gmID,gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmRef 
+  sql <- paste("SELECT DISTINCT gmRefID as gmID,gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmRef
                    NATURAL JOIN gmVar WHERE gmRefID IN ",gmSQLValues(id,db=db), ";", sep="")
   dbGetQuery(db,sql)
 }
@@ -919,14 +919,14 @@ setGeneric("gmiClassVar", function(var, db) {standardGeneric("gmiClassVar")})
 
 setMethod("gmiClassVar", signature = c(var="character", db="MySQLConnection"),
           definition = function(var, db) {
-            sql <- paste("SELECT gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmVar  
+            sql <- paste("SELECT gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmVar
                    WHERE gmVarName IN (",gmSQLValues(var,db=db),")")
             dbGetQuery(db,sql)
           })
 
 setMethod("gmiClassVar", signature = c(var="numeric", db="MySQLConnection"),
           definition = function(var, db) {
-            sql <- paste("SELECT gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmVar  
+            sql <- paste("SELECT gmVarID, gmVarTypeID,gmVarName,gmVarDescription FROM gmVar
                    WHERE gmVarID IN (",gmSQLValues(var,db=db), ")")
             dbGetQuery(db,sql)
           })
@@ -1010,14 +1010,14 @@ gmGet <- function(expr,envir=parent.frame(),EXPR=substitute(expr),db=getOption("
   if(FALSE) {
     . <- nofunc
   }
-  
-  
+
+
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
@@ -1038,14 +1038,14 @@ gmGet <- function(expr,envir=parent.frame(),EXPR=substitute(expr),db=getOption("
     gmRead(exSet, db=db)
   }
   names(sets) <- cms$gmVarName
-  
+
   return(list(info=info, sets=sets))
-  
+
   #gmRequest("gmiGet", parameters=list(EXPR=EXPR, envir=envir, ...), db=db)
 }
 
 
-gmGetVar <- function(expr,what,EXPR=substitute(expr),envir=parent.frame(),db=getOption("gmDB"),unique=FALSE) { 
+gmGetVar <- function(expr,what,EXPR=substitute(expr),envir=parent.frame(),db=getOption("gmDB"),unique=FALSE) {
   cm <- gmClassMembers(EXPR=EXPR,envir=envir,db=db)
   cm1 <- cm[cm$gmVarName==what,,drop=FALSE]
   if( unique && nrow(cm1) !=1 ) {
@@ -1069,19 +1069,19 @@ gmiInsertWithID <- function(sql, db=getOption("gmDB")) {
   x$LAST_INSERT_ID
 }
 
-gmAdd <- function(where, what, data, rg=getOption("defaultRightsGroup"), EXPR=substitute(where), 
+gmAdd <- function(where, what, data, rg=getOption("defaultRightsGroup"), EXPR=substitute(where),
                   envir=parent.frame(), db=getOption("gmDB"), force=FALSE) {
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
   EXPR <- unquote(EXPR)
-  
+
   data <- unquote(substitute(data))[-1]
   myid <- gmRequest("gmiAdd", parameters=list(EXPR=EXPR, what=what, data=data, rg=rg, force=force, envir=envir), db=db)
   return(myid)
@@ -1095,12 +1095,12 @@ gmiAdd <- function(EXPR, what, data, rg, force, envir, db) {
     gmID <- nofunc
     id <- nofunc
   }
-  
+
   exprID <- gmiFullRead(EXPR=EXPR, envir=envir, db=db)
   if (dim(exprID)[1] != 1 ) {
     stop("gmAdd: ",dim(exprID)[1]," objects found where to place the new one. Please specify.");
   }
-  
+
   # rights managemnt: is the user allowed to add a new object?
   #userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   #rgID <- dbGetQuery(db,paste("SELECT gmRightsGroup AS rg, gmID FROM gmObject WHERE gmID IN (",gmSQLValues(exprID$gmID),");", sep=""))
@@ -1109,41 +1109,41 @@ gmiAdd <- function(EXPR, what, data, rg, force, envir, db) {
   #wuser1 <- wuser[wuser$user==userID,]
   #idx <- rgID$rg==wuser1$gmID
   #idx[is.na(idx)] <- TRUE
-  
+
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   rgID <- gmRequest("gmiRightsGroup", parameters=list(gmID=exprID$gmID), db=db)
-  
+
   ### NA correction for no given rights group
   rgID$rg[is.na(rgID$rg)] <- -1
-  
+
   tmp <- names(table(rgID$rg))
   if (!(length(tmp) == 1 && tmp == -1)) {
     wuser <- gmiFullRead(gmExpr(root$rightsGroup[id=gmID, id %in% .(tmp), id=drop, user=.$writers$userGroup$user]))
-  
+
     ### deleting all empty entries
     wuser <- wuser[!is.na(wuser$user),]
-  
+
     wuser1 <- wuser[wuser$user==userID,]
     idx1 <- is.element(rgID$rg, wuser1$gmID)
-  
+
     ### if no rights group is given, anyone can access
     idx2 <- rgID$rg==-1
     idx <- idx1 | idx2
-  
+
     exprID <- exprID[exprID$gmID %in% rgID[idx,]$gmID,, drop=FALSE]
   }
-  
+
   if (dim(exprID)[1]  == 0)
     stop("You do not have permission to add objects here.")
-  
+
   varID <- gmClass(var=gmGetVar(.(exprID$gmID),what=what,db=db,unique=TRUE)$gmVarID,db=db);
   stopifnot(varID$gmVarTypeID=="set")
-  
+
   childs <- gmClassMembers(var=varID$gmVarID, db=db)
   if( !is.data.frame(data) ) {
     data <- as.data.frame(as.list(data))
   }
-  
+
   #are there all required objects? (apart from gmCreationTime - we can do it on our own)
   required <- childs$gmVarName[childs$require==1 & childs$gmVarName!="gmCreationTime"]
   if (!all(required %in% names(data))) {
@@ -1151,44 +1151,44 @@ gmiAdd <- function(EXPR, what, data, rg, force, envir, db) {
       warning("gmAdd: ",paste(required,collapse=", "), " are required but missing.")
     else stop("gmAdd: ",paste(required,collapse=", "), " are required but missing. Use force=TRUE to force addition.")
   }
-  
+
   members <- names(data) %in% childs$gmVarName
   if( !all(members))
     stop("gmAdd: ",paste(names(data)[!members],collapse=", ")," are not in variable list (",paste(childs$gmVarName,collapse=","),")")
-  
+
   n <- nrow(data)
   #if (rg == -1)
   #  stop("gmAdd: no rights goup given. Object cannot be created without a given rights group!")
   sql <- paste("INSERT INTO gmObject VALUES ",paste(rep("()",n),collapse=","))
   myid=gmiInsertWithID(db=db, sql)
-  
-  if ( rg != -1 ) 
+
+  if ( rg != -1 )
     dbSendQuery(db, paste("UPDATE gmObject SET gmRightsGroup=",gmSQLValues(rg)," WHERE gmID=",myid,";",sep=""))
- 
+
   refVals <- data.frame(gmID=exprID$gmID,gmVarID=varID$gmVarID, gmRefID=seq(myid,myid+n-1))
   sql <-paste("INSERT INTO gmRef (gmID,gmVarID,gmRefID) VALUES ", gmSQLValues(refVals, db=db), ";", sep="")
   dbSendQuery(db, sql)
-  
+
   gmSet(where=.(myid), data=data, varID=varID, childs=childs, members=members, db=db)
   return(myid)
 }
 
-gmSet <- function(where, data, varID=NULL, childs=NULL, members=NULL, EXPR=substitute(where), envir=parent.frame(), 
+gmSet <- function(where, data, varID=NULL, childs=NULL, members=NULL, EXPR=substitute(where), envir=parent.frame(),
                   db=getOption("gmDB"), update=TRUE) {
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
-  
+
   if (!is.data.frame(data))
     data <- unquote(substitute(data))[-1]
   EXPR <- unquote(EXPR)
-  
+
   #parameters=list(EXPR=EXPR, data=data, envir=envir, update=update, ...)
   #if (!missing(varID))
   #{
@@ -1218,11 +1218,11 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
     gmID <- nofunc
     id <- nofunc
   }
-  
+
   if (is.null(varID))
     ct <- FALSE
   else ct <- TRUE
-  
+
   #if varID is not missing, then it should come from gmAdd and therefore where is an id
   if (is.null(varID))
   {
@@ -1240,7 +1240,7 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
       data <- as.data.frame(as.list(data))
     }
   } else myID <- EXPR
-  
+
   #userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   #rgID <- dbGetQuery(db,paste("SELECT gmRightsGroup AS rg, gmID FROM gmObject WHERE gmID IN (",gmSQLValues(myID),");", sep=""))
   #tmp <- names(table(rgID$rg))
@@ -1250,30 +1250,30 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
   #idx[is.na(idx)] <- TRUE
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   rgID <- gmRequest("gmiRightsGroup", parameters=list(gmID=myID), db=db)
-  
+
   ### NA correction for no given rights group
   rgID$rg[is.na(rgID$rg)] <- -1
-  
+
   tmp <- names(table(rgID$rg))
   if (!(length(tmp) == 1 && tmp == -1)) {
     wuser <- gmiFullRead(gmExpr(root$rightsGroup[id=gmID, id %in% .(tmp), id=drop, user=.$writers$userGroup$user]))
-  
+
     ### deleting all empty entries
     wuser <- wuser[!is.na(wuser$user),]
-  
+
     wuser1 <- wuser[wuser$user==userID,]
     idx1 <- is.element(rgID$rg, wuser1$gmID)
-  
+
     ### if no rights group is given, anyone can access
     idx2 <- rgID$rg==-1
     idx <- idx1 | idx2
-  
+
     myID <- myID[myID %in% rgID[idx,]$gmID, drop=FALSE]
   }
-  
+
   if (length(myID)  == 0)
     stop("You do not have permission to add objects here.")
-  
+
   if (is.null(childs))
     childs <- gmClassMembers(.(myID), db=db)
   if (is.null(members))
@@ -1281,34 +1281,34 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
   if( !all(members))
     stop("gmAdd: ",paste(names(data)[!members],collapse=", "),
          " is/are not in variable list (",paste(childs$gmVarName,collapse=","),")")
-  
+
   n <- nrow(data)
-  
+
   #Adding the data stuff
-  sql=paste("SELECT V.gmVarName, V.gmVarTypeID, V.gmVarID, T.gmTable FROM gmVar V ", 
+  sql=paste("SELECT V.gmVarName, V.gmVarTypeID, V.gmVarID, T.gmTable FROM gmVar V ",
             "NATURAL JOIN gmVarType T WHERE gmVarName IN ",gmSQLValues(names(data),db=db), sep="")
   tables <- dbGetQuery(db,sql)
-  
+
   for (i in 1:n) {
     for (j in 1:length(members)) {
-      if (tables$gmVarTypeID[j]!="set") 
+      if (tables$gmVarTypeID[j]!="set")
       {
         #Is the value already set? Then update it. Otherwise insert it.
         sql <- paste("SELECT x FROM ", tables$gmTable[j], "WHERE gmID=", myID+i-1, " AND gmVarID=", tables$gmVarID[j], ";")
         res <- fetch(dbSendQuery(db, sql))
         if (nrow(res) == 0)
-          sql <- paste("INSERT INTO ", tables$gmTable[j], " (gmID,gmVarID,x) VALUES (", 
+          sql <- paste("INSERT INTO ", tables$gmTable[j], " (gmID,gmVarID,x) VALUES (",
                        myID+i-1, ",", tables$gmVarID[j], ",\"", gmEscapeStrings(db=db, as.character(data[tables$gmVarName[j]][i,])), "\");", sep="")
-        else sql <- paste("UPDATE ", tables$gmTable[j], " SET x=\"", gmEscapeStrings(db=db, as.character(data[tables$gmVarName[j]][i,])), 
+        else sql <- paste("UPDATE ", tables$gmTable[j], " SET x=\"", gmEscapeStrings(db=db, as.character(data[tables$gmVarName[j]][i,])),
                           "\" WHERE gmID=", myID+i-1, " AND gmVarID=", tables$gmVarID[j], ";", sep="")
       } else {
         #abchecken ob das referenzierte Objekt wirklich in der Datenbank mit der Funktion vorhanden ist?
-        #Objekt wieder l?schen, wenn Dinge fehlen oder nur ne Warning ausgeben? 
+        #Objekt wieder l?schen, wenn Dinge fehlen oder nur ne Warning ausgeben?
         sql <- paste("SELECT * FROM gmRef WHERE gmID=", myID+i-1, " AND gmVarID=", tables$gmVarID[j], ";", sep="")
         res <- fetch(dbSendQuery(db, sql))
-        
+
         if (nrow(res) == 0)
-          sql <- paste("INSERT INTO gmRef (gmID,gmVarID,gmRefID) VALUES (", 
+          sql <- paste("INSERT INTO gmRef (gmID,gmVarID,gmRefID) VALUES (",
                        myID+i-1, ",", tables$gmVarID[j], ",", data[tables$gmVarName[j]][i,], ");", sep="")
         else
         {
@@ -1316,22 +1316,22 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
           {
             if (nrow(res) != 1)
               stop("Update object ambiguous.")
-            else 
+            else
               sql <- paste("UPDATE gmRef SET gmRefID=", data[tables$gmVarName[j]][i], " WHERE gmID=", myID+i-1,
                            " AND gmVarID=", tables$gmVarID[j], ";", sep="")
-          } 
+          }
           else
             sql <- paste("INSERT INTO gmRef (gmID, gmVarID, gmRefID) VALUES (", myID+i-1, ",", tables$gmVarID[j], ",",
-                         data[tables$gmVarName[j]][i,],");", sep="")            
+                         data[tables$gmVarName[j]][i,],");", sep="")
         }
       }
       dbSendQuery(db, sql)
     }
-    
+
     #gmCreationTime set automatically?
     if (!any("gmCreationTime"==names(data)) && isTRUE(ct))
     {
-      sql <- "SELECT V.gmVarName, V.gmVarTypeID, V.gmVarID, T.gmTable FROM gmVar V 
+      sql <- "SELECT V.gmVarName, V.gmVarTypeID, V.gmVarID, T.gmTable FROM gmVar V
       NATURAL JOIN gmVarType T WHERE gmVarName='gmCreationTime';"
       varID <- fetch(dbSendQuery(db,sql))
       sql <- paste("SELECT DATE_FORMAT(gmCreateTime, '%Y-%m-%d %H:%i:%s') AS gmCreateTime FROM gmObject WHERE gmID=", myID+i-1,";", sep="")
@@ -1339,9 +1339,9 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
       sql <- paste("INSERT INTO ", varID$gmTable, " (gmID,gmVarID,x) VALUES (",
                    myID+i-1, ",", varID$gmVarID, ",\"", ctime$gmCreateTime, "\");", sep="")
       dbSendQuery(db, sql)
-      
+
     }
-    
+
     if (!any("gmCreator"==names(data)) && isTRUE(ct)) {
       sql <- "SELECT V.gmVarName, V.gmVarTypeID, V.gmVarID, T.gmTable FROM gmVar V
       NATURAL JOIN gmVarType T WHERE gmVarName='gmCreator';"
@@ -1356,14 +1356,14 @@ gmiSet <- function(EXPR, data, varID, childs, members, envir, update, db) {
 
 
 ###
-gmRemove <- function(expr, which=NULL, var=NULL, EXPR=substitute(expr), WHICH=substitute(which), 
+gmRemove <- function(expr, which=NULL, var=NULL, EXPR=substitute(expr), WHICH=substitute(which),
                      envir=parent.frame(),db=getOption("gmDB")) {
   unquote <- function(e) {
-    if (length(e) <= 1L) 
+    if (length(e) <= 1L)
       e
-    else if (e[[1L]] == as.name(".")) 
+    else if (e[[1L]] == as.name("."))
       eval(e[[2L]], envir)
-    else if (is.pairlist(e)) 
+    else if (is.pairlist(e))
       as.pairlist(lapply(e, unquote))
     else as.call(lapply(e, unquote))
   }
@@ -1372,8 +1372,8 @@ gmRemove <- function(expr, which=NULL, var=NULL, EXPR=substitute(expr), WHICH=su
     WHICH <- unquote(WHICH)
   gmRequest(fun="gmiRemove", parameters=list(EXPR=EXPR, WHICH=WHICH, var=var, envir=envir), db=db)
 }
-  
-  
+
+
 gmiRemove <- function(EXPR, WHICH, var, envir, db) {
   if (FALSE)
   {
@@ -1391,7 +1391,7 @@ gmiRemove <- function(EXPR, WHICH, var, envir, db) {
   }
   else #exprID <- data.frame(gmID=expr)
     varID <- gmClass(EXPR=EXPR,db=db);
-  
+
   # rights managemnt: is the user allowed to write the object?
   # userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   # rgID <- dbGetQuery(db,paste("SELECT gmRightsGroup AS rg, gmID FROM gmObject WHERE gmID IN (",gmSQLValues(varID$gmID),");", sep=""))
@@ -1403,30 +1403,30 @@ gmiRemove <- function(EXPR, WHICH, var, envir, db) {
   # varID <- varID[varID$gmID==rgID[idx,]$gmID,, drop=FALSE]
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   rgID <- gmRequest("gmiRightsGroup", parameters=list(gmID=varID$gmID), db=db)
-  
+
   ### NA correction for no given rights group
   rgID$rg[is.na(rgID$rg)] <- -1
-  
+
   tmp <- names(table(rgID$rg))
   if (!(length(tmp) == 1 && tmp == -1)) {
     wuser <- gmiFullRead(gmExpr(root$rightsGroup[id=gmID, id %in% .(tmp), id=drop, user=.$writers$userGroup$user]))
-    
+
     ### deleting all empty entries
     wuser <- wuser[!is.na(wuser$user),]
-    
+
     wuser1 <- wuser[wuser$user==userID,]
     idx1 <- is.element(rgID$rg, wuser1$gmID)
-    
+
     ### if no rights group is given, anyone can access
     idx2 <- rgID$rg==-1
     idx <- idx1 | idx2
-    
+
     varID <- varID[varID$gmID %in% rgID[idx,]$gmID,, drop=FALSE]
   }
-  
+
   if (dim(varID)[1]  == 0)
     stop("You do not have permission to remove any of these objects.")
-  
+
   if (is.null(var))
   {
     if (varID$gmVarTypeID == "set")
@@ -1439,16 +1439,16 @@ gmiRemove <- function(EXPR, WHICH, var, envir, db) {
   {
     #myID <- exprID$gmID
     childs <- gmClassMembers(.(varID$gmID), db=db)
-    
+
     if (!(var %in% childs$gmVarName))
       stop("There is no member called ", var, " for ", varID$gmVarName, ".")
-    
+
     childsSel <- childs[childs$gmVarName == var,]
     if (childsSel$gmVarTypeID != "set")
     {
       sql <- paste("SELECT gmTable FROM gmVarType WHERE gmVarTypeID='", childsSel$gmVarTypeID, "';", sep="")
       res <- fetch(dbSendQuery(db, sql))
-      sql <- paste("DELETE FROM ", res$gmTable, " WHERE gmID=", varID$gmID, " AND gmVarID=", childsSel$gmVarID, ";", sep="")     
+      sql <- paste("DELETE FROM ", res$gmTable, " WHERE gmID=", varID$gmID, " AND gmVarID=", childsSel$gmVarID, ";", sep="")
       res <- dbSendQuery(db, sql)
     }
     else
@@ -1458,7 +1458,7 @@ gmiRemove <- function(EXPR, WHICH, var, envir, db) {
         stop("No object found for removal.")
       if (dim(gmRefID)[1] > 1)
         stop("Object for removal ambiguous. Please specify.")
-      sql <- paste("DELETE FROM gmRef WHERE gmVarID=", childsSel$gmVarID, " AND gmRefID=", gmRefID$gmID, 
+      sql <- paste("DELETE FROM gmRef WHERE gmVarID=", childsSel$gmVarID, " AND gmRefID=", gmRefID$gmID,
                    " AND gmID=", varID$gmID, ";", sep="")
       res <- dbSendQuery(db, sql)
       # warning, if nothing was removed because of an missing entry?
@@ -1477,7 +1477,7 @@ gmiCreateRightsGroup <- function(rightsGroup, envir, db) {
     userName <- nofunc
     . <- nofunc
   }
-  
+
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   options(warn=-1)
   rgID <- gmAdd(root, "rightsGroup", list(gmName=.(rightsGroup)), force=TRUE)
@@ -1485,7 +1485,7 @@ gmiCreateRightsGroup <- function(rightsGroup, envir, db) {
   writeID <- gmAdd(rgID, "writers", data=list(gmCreator=.(userID)), force=TRUE)
   options(warn=0)
   return(rgID)
-  
+
 }
 
 ###
@@ -1498,7 +1498,7 @@ gmiCreateUserGroup <- function(userGroup, envir, db) {
     userName <- nofunc
     . <- nofunc
   }
-  
+
   userID <- gmiFullRead(gmExpr(root$user[userName==.(getOption("dbUser"))]))$gmID
   options(warn=-1)
   ugID <- gmAdd(root, "userGroup", list(gmName=.(userGroup)), force=TRUE)
@@ -1516,58 +1516,58 @@ gmiSetRights <- function(userGroup, rightsGroup, write, read, envir, db) {
     gmName <- nofunc
     . <- nofunc
   }
-  
+
   if (is.character(userGroup))
     ugID <- gmRead(root$userGroup[gmName==.(userGroup)])$gmID
   else ugID <- userGroup
   if(!is.numeric(ugID) || length(ugID) == 0) stop("userGroup must be an ID or name of an existing usergroup")
-  
+
   if (is.character(rightsGroup))
     rgID <- gmRead(root$rightsGroup[gmName==.(rightsGroup)])$gmID
   else rgID <- rightsGroup
   if (!is.numeric(rgID) || length(rgID) == 0) stop("rightsGroup must be an ID or name of an existing rights group")
-  
+
   if (write)
     gmSet(rgID$writers, data.frame(userGroup=ugID))
   if(read)
     gmSet(rgID$readers, data.frame(userGroup=ugID))
 }
 
-### 
+###
 gmAddUserToGroup <- function(user, userGroup, envir=parent.frame(), db=getOption("gmDB")) {
   gmRequest("gmiAddUserToGroup", parameters=list(user=user, userGroup=userGroup, envir=envir), db=db)
 }
 
 gmiAddUserToGroup <- function(user, userGroup, envir, db) {
-  if(FALSE) 
+  if(FALSE)
   {
     userName <- nofunc
     userGroup <- nofunc
     . <- nofunc
     gmName <- nofunc
   }
-  
+
   if (is.character(user))
     userID <- gmRead(root$user[userName==.(user)])$gmID
   else userID <- user
   if (!is.numeric(userID)) stop("user must be an ID or valid username")
-  
+
   if (is.character(userGroup))
     ugID <- gmRead(root$userGroup[gmName==.(userGroup)])$gmID
   else ugID <- userGroup
   if (!is.numeric(ugID)) stop("userGroup must be an ID or name of an existing usergroup")
-  
+
   gmSet(ugID, data=data.frame(user=userID))
 }
 
 
-### 
+###
 gmSetRightsGroup <- function(object, rightsGroup, envir=parent.frame(), db=getOption("gmDB")) {
   gmRequest("gmiSetRightsGroup", parameters=list(object=object, rightsGroup=rightsGroup, envir=envir), db=db)
 }
 
 gmiSetRightsGroup <- function(object, rightsGroup, envir, db) {
-  if(FALSE) 
+  if(FALSE)
   {
     . <- nofunc
     gmName <- nofunc
@@ -1577,21 +1577,21 @@ gmiSetRightsGroup <- function(object, rightsGroup, envir, db) {
   else rgID <- rightsGroup
   if (!is.numeric(rgID)) stop("rightsGroup must be an ID or a name of an existing rights group")
   if (length(rgID) == 0) stop("Rights group not found. Maybe you do not have sufficient access rights.")
-  
+
   object <- as.vector(object)
   for (i in 1:length(object)) {
     objID <- gmRead(.(object[i]))
     if (length(objID) == 0) stop("No object found. Maybe you do not have the rights to change the rights group.")
-  
+
     sql <- paste("UPDATE gmObject SET gmRightsGroup=", rgID, " WHERE gmID=", objID, ";", sep="")
     res <- dbSendQuery(db,sql)
     dbClearResult(res)
   }
-  
+
 }
 
 
-### 
+###
 gmCreateUser <- function(user, password, userGroups, envir=parent.frame(), db=getOption("gmDB")) {
   if (missing(user) | missing(password)) {
     dbuser <- runApp(list(ui = fluidPage(
@@ -1600,19 +1600,19 @@ gmCreateUser <- function(user, password, userGroups, envir=parent.frame(), db=ge
                        textInput(inputId = "login", label = "Login", width=150),
                        passwordInput(inputId = "pwd", label = "Password", width=200),
                        actionButton(inputId = "OK", label ="OK")))
-    ), 
-    server = function(input, output) 
+    ),
+    server = function(input, output)
     {
       observeEvent(input$OK, { dbuser <- (list(login=input$login, password=input$pwd))
       stopApp(dbuser)})
     }))
-  
+
     user <- dbuser$login
     password <- dbuser$password
   }
-  
+
   password <- digest(password, "sha256", serialize=FALSE)
-  
+
   gmRequest("gmiCreateUser", parameters=list(user=user, password=password, userGroups=userGroups, envir=envir), db=db)
 }
 
@@ -1622,9 +1622,9 @@ gmiCreateUser <- function(user, password, userGroups, envir, db) {
     . <- nofunc
     gmName <- nofunc
   }
-  
+
   userID <- gmAdd(root, "user", data=data.frame(userName=.(user), password=.(password)))
-  
+
   userGroups <- as.vector(userGroups)
   for (i in 1:length(userGroups))
   {
@@ -1634,7 +1634,7 @@ gmiCreateUser <- function(user, password, userGroups, envir, db) {
 }
 
 
-### 
+###
 ### set the default rightsGroup
 gmDefaultRightsGroup <- function(rightsGroup, db=getOption("gmDB")) {
   if (FALSE)
@@ -1646,9 +1646,9 @@ gmDefaultRightsGroup <- function(rightsGroup, db=getOption("gmDB")) {
     rgID <- gmiFullRead(gmExpr(root$rightsGroup[gmName==.(rightsGroup)]))$gmID
   else rgID <- rightsGroup
   if (!is.numeric(rgID)) stop("rightsGroup must be an ID or name of an existing rights group")
-  
+
   if (length(rgID) == 0) stop("Cannot set the default rights group. Maybe you don not have sufficient access rights.")
-  
+
   options(defaultRightsGroup=rgID)
 }
 
@@ -1660,25 +1660,26 @@ setGeneric("gmRequest", function(fun, parameters, db) {standardGeneric("gmReques
 setMethod("gmRequest", signature = c(fun="character", parameters="list", db="MySQLConnection"),
           definition = function(fun, parameters, db) {
             if( ! fun %in% c("gmiInitRead", "gmiRead","gmiClass", "gmiClassMembers", "repairGmiGrandChilds",
-                             "gmiAdd", "gmiSet", "gmiRemove","gmiClassVar", "gmiClassMembersVar", "gmiRightsGroup", 
+                             "gmiAdd", "gmiSet", "gmiRemove","gmiClassVar", "gmiClassMembersVar", "gmiRightsGroup",
                              "gmiCreateRightsGroup", "gmiCreateUserGroup", "gmiSetRights", "gmiAddUserToGroup",
                              "gmiSetRightsGroup", "gmiCreateUser", "gmiCreateClass", "gmiAddMembers")) {
-              stop("Cannot process request ...")  
+              stop("Cannot process request ...")
             }
-            
+
             do.call(fun, c(parameters, list(db=db)),quote=TRUE)
           }
 )
 
 setMethod("gmRequest", signature = c(fun="character", parameters="list", db="ANY"),
           definition = function(fun, parameters, db) {
-            if ( class(db)[1] != "sockconn")
+            # if ( class(db)[1] != "sockconn")
+            if ( !is(db, "sockconn"))
               stop("Error: No socket or MySQL connection provided.")
             if( ! fun %in% c("gmiInitRead","gmiRead","gmiClass", "gmiClassMembers", "repairGmiGrandChilds",
-                             "gmiAdd", "gmiSet", "gmiRemove", "gmiClassVar", "gmiClassMembersVar", "gmiRightsGroup", 
+                             "gmiAdd", "gmiSet", "gmiRemove", "gmiClassVar", "gmiClassMembersVar", "gmiRightsGroup",
                              "gmiCreateRightsGroup", "gmiCreateUserGroup", "gmiSetRights", "gmiAddUserToGroup",
                              "gmiSetRightsGroup", "gmiCreateUser", "gmiCreateClass", "gmiAddMembers")) {
-              stop("Can not process request ...")  
+              stop("Can not process request ...")
             }
             #serialize(list(type="gmRequest", fun=fun, parameters=parameters),db)
             saveRDS(list(type="gmRequest", fun=fun, parameters=parameters),db)

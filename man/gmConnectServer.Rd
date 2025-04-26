@@ -14,7 +14,7 @@
   A geometallurgy database is a database on a relational database
   server. It can handle very general and recursive information for
   the transparent access to whole projects from a statistical analysis
-  software.  
+  software.
 }
 \usage{
 gmConnectServer(..., server="localhost", dbuser, asDefault=TRUE)
@@ -27,7 +27,7 @@ gmEscapeStrings(s,db=getOption("gmDB"))
 gmRequest(fun, parameters, db)
 }
 \arguments{
-  \item{...}{Arguments to \code{\link{dbConnect}} from \link{RMySQL} to contact the
+  \item{...}{Arguments to \code{\link[DBI]{dbConnect}} to contact the
     database server.}
   \item{asDefault}{Logical indicating whether being used as default connection.}
   \item{db}{A database connection object as returned by \code{gmConnectServer}.}
@@ -37,7 +37,7 @@ gmRequest(fun, parameters, db)
   \item{admin}{The login for the administrator/the first database user.}
   \item{adminPwd}{The password for the administrator/the database user.}
   \item{pattern}{An SQL-regular expression (for LIKE) to specify the
-    variable names to be listed.} 
+    variable names to be listed.}
   \item{s}{A character vector of strings to be escaped.}
   \item{fun}{A function name.}
   \item{parameters}{A list of parameters for the function \code{fun}}
@@ -52,7 +52,7 @@ gmRequest(fun, parameters, db)
   \item{gmListVariableTypes}{Returns a dataframe describing the variable
     types defined in the geometallurgy database.}
   \item{gmDBSummary}{Returns a dataframe giving variable name,
-    variable type and number of objects 
+    variable type and number of objects
     for each variable.}
 }
 \details{
@@ -63,37 +63,34 @@ gmRequest(fun, parameters, db)
   typical statistical tasks of geometallurgy.
 
   The data storage starts from a common root object "root", which
-  contains a variable set variable "project". 
-  
-  The Database connection is handled by \code{gmConnectServer} and \code{gmDisconnectServer}. In order to assure a proper rights management, the 
-  user does not directly connect to the database. We implemented a two level security system. The first level represents the connection to the 
-  database server. Therefore a general user on the server is needed, who is provided with the required rights to access and manipulate the database 
-  itself. The corresponding credentials are compiled in \code{...} and will be forwarded to \link{dbConnect} from the package \link{RMySQL}.
-  Data access happens on the second level, where the \code{dbuser} is involved. His credentials are checked against the information stored in the 
+  contains a variable set variable "project".
+
+  The Database connection is handled by \code{gmConnectServer} and \code{gmDisconnectServer}. In order to assure a proper rights management, the
+  user does not directly connect to the database. We implemented a two level security system. The first level represents the connection to the
+  database server. Therefore a general user on the server is needed, who is provided with the required rights to access and manipulate the database
+  itself. The corresponding credentials are compiled in \code{...} and will be forwarded to \link[DBI]{dbConnect}.
+  Data access happens on the second level, where the \code{dbuser} is involved. His credentials are checked against the information stored in the
   database. Everytime some information is queried from the database, the result is given according to the rights this user owns on this particular
   data. If no user is explicitly given during the function call, i.e. \code{dbuser} is missing, \code{gmConnectServer} will start a dialog to access
   the (db)user's credentials. Same is true, if information on the general database server user is omitted.
-  
+
   In order to create a compatible database, you may \code{gmCreateDB}. A connection to the given MySQL-server is established and a new database of
-  the given \code{dbName} is created. Furthermore first variables to realise the user/rights management are provided. Additonally a first 
-  user/admin is added to the database with the given username and password, so that this user is able to login to the database afterwards. If no 
-  MySQL login, MySQL password or MySQL host is given, a shiny app requests these information. Same happens if no login or password is given for the 
+  the given \code{dbName} is created. Furthermore first variables to realise the user/rights management are provided. Additonally a first
+  user/admin is added to the database with the given username and password, so that this user is able to login to the database afterwards. If no
+  MySQL login, MySQL password or MySQL host is given, a shiny app requests these information. Same happens if no login or password is given for the
   first user/admin.
-  
+
   This package can be used in a client - server approach. Then \code{gmConnectServer} will not return a database connection, but a socket
-  connection. It will be used to send the commands to an R server. The actual translation from R into SQL is then done on the server. Again only 
-  the accessible data according to the user's rights will be returned. In order to activate the client-server mode, use the argument \code{server} 
+  connection. It will be used to send the commands to an R server. The actual translation from R into SQL is then done on the server. Again only
+  the accessible data according to the user's rights will be returned. In order to activate the client-server mode, use the argument \code{server}
   to state the server you want to access. By default \code{server} is set to \code{localhost}.
-  
+
   \code{gmRequest} is an internal function. It should not be called directly. Depending on the class of database connection used, it decides if the
   \code{fun} is evaluated locally or handed over to the server.
 }
-\seealso{\code{\link[RMySQL]{MySQLConnection-class}}
-  
-}
 \examples{
 \dontrun{
-gmCreateDB(MySQL(), user="mysqlUser", password="mysqlPassword", host="mysqlServer", 
+gmCreateDB(MySQL(), user="mysqlUser", password="mysqlPassword", host="mysqlServer",
   dbName="myDB", admin="admin",adminPwd="myAdminPassword")
 gmConnectServer(MySQL(), group="test", server="localhost")
 gmListVariables(pattern=".*",db=.gmDB)

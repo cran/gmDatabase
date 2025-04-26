@@ -7,7 +7,7 @@
 \title{Provide an R representation of SQL}
 \description{
   gmSQL provides an R representation of SQL, which can be used to
-  construct a complex hierachy of joins and select statements. 
+  construct a complex hierachy of joins and select statements.
 }
 \usage{
 gmSQL(.,expr=substitute(.),env=SQLenv)
@@ -26,13 +26,13 @@ gmSQLTable(table,as=tick(table))
 \value{
   For gmSQL and gmSQLTable, a call representing the intended SQL
   expression as R expression. For gmSQL2SQL a character string holding
-  the corresponding SQL expression. 
+  the corresponding SQL expression.
 }
 \details{
   These commands allow to construct a representation of a small subset
   of SQL statements by R language objects. The following (derived) table
   value statements are supported
-  \itemize{
+  \describe{
     \item{join(x,y,on=NULL)}{Represent the \code{x JOIN y ON on}.}
     \item{leftjoin(x,y,on=NULL)}{Represent the \code{x LEFT OUTER JOIN y ON on}.}
     \item{select(what=NULL,from=NULL,where=NULL,as=tick())}{
@@ -87,14 +87,14 @@ gmSQLTable(table,as=tick(table))
     \item{max(...)}{Represents \code{MAX(...)} in SQL expressions (maximum of values).}
     \item{count(x)}{Represents \code{COUNT(x)} in SQL expressions.}
   }
-  
-  Special environments \code{SQLenv} and \code{SQL2SQLenv} are used in order to prevent code injection. 
+
+  Special environments \code{SQLenv} and \code{SQL2SQLenv} are used in order to prevent code injection.
 }
 \references{
   \url{http://dev.mysql.com/doc/refman/5.7/en}
 }
 \seealso{
-  \code{\link{dbSendQuery}}
+  \code{\link[DBI]{dbSendQuery}}
 }
 \examples{
 tabA <- gmSQLTable("A")
